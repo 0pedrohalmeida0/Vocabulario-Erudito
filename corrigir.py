@@ -1,19 +1,25 @@
 import json
 
-# 1. Abre o teu arquivo novo e limpo para leitura
+# 1. Abre o arquivo limpo
 with open('palavras_limpo.json', 'r', encoding='utf-8') as arquivo:
-    dados = json.load(arquivo)
+    texto = arquivo.read()
 
-# 2. Percorre a lista de palavras
-for item in dados:
-    fields = item['fields']
-    
-    # Se a chave 'idioma' não existir ou estiver vazia, define como 'pt-br'
-    if 'idioma' not in fields or fields['idioma'] == '':
-        fields['idioma'] = 'pt-br'
+# 2. Dicionário de tradução dos caracteres corrompidos comuns
+substituicoes = {
+    'prop¾sito': 'propósito',
+    '¾': 'ó',
+    'Æ': 'ã',
+    '¡': 'á',
+    '¡': 'í',
+    'à': 'é',
+}
 
-# 3. Guarda o arquivo corrigido com encoding UTF-8 perfeito
+# Aplica as correções no texto bruto do arquivo
+for errado, correto in substituicoes.items():
+    texto = texto.replace(errado, correto)
+
+# 3. Salva o texto corrigido de volta
 with open('palavras_limpo.json', 'w', encoding='utf-8') as arquivo:
-    json.dump(dados, arquivo, ensure_ascii=False, indent=2)
+    arquivo.write(texto)
 
-print("✅ Arquivo palavras_limpo.json atualizado com 'pt-br' em todas as palavras!")
+print("📝 Acentos corrigidos no arquivo JSON!")
