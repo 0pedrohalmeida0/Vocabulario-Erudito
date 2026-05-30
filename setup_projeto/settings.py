@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)+wk!0orc&zn)t8i)if41wpp5pv-xm0dfr3gh&_d!(gc_7on_x
 DEBUG = False
 
 # CONFIGURAÇÃO DOS HOSTS AUTORIZADOS
-ALLOWED_HOSTS = ['.pythonanywhere.com', 'pedroalmeida.pythonanywhere.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -130,4 +130,4 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SESSION_COOKIE_AGE = 31536000 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [] 
