@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <script>
-        // 1. Registra o Service Worker direto na raiz (Gerencia o escopo do app inteiro)
+        // 1. Registra o Service Worker na raiz
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -23,12 +23,39 @@
             });
         }
 
-        // 2. Pede permissão para mostrar notificações
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('🔔 Permissão concedida! As palavras aparecerão na tela.');
-            } else {
-                console.log('🔕 Permissão negada pelo usuário.');
+        // 2. Função Automática para exibir a palavra do dia na Notificação
+        function enviarNotificacaoAutomatica() {
+            if (Notification.permission === 'granted') {
+                navigator.serviceWorker.ready.then(registration => {
+                    // Pega o termo da palavra direto do HTML dinâmico do Django
+                    const termoPalavra = "{{ palavra.termo|default:'' }}";
+                    const significadoPalavra = "{{ palavra.significado|default:'' }}";
+
+                    // Só dispara se houver uma palavra carregada na tela
+                    if (termoPalavra) {
+                        registration.showNotification(`Nova Palavra: ${termoPalavra} 📚`, {
+                            body: significadoPalavra,
+                            icon: '/static/core/images/icon-192.png',
+                            vibrate: [200, 100, 200],
+                            badge: '/static/core/images/icon-192.png'
+                        });
+                    }
+                });
+            }
+        }
+
+        // 3. Gerencia a permissão e dispara automaticamente ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            if (Notification.permission === 'granted') {
+                // Se já tem permissão, envia direto
+                enviarNotificacaoAutomatica();
+            } else if (Notification.permission !== 'denied') {
+                // Se ainda não decidiu, pede permissão e envia se aceito
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') {
+                        enviarNotificacaoAutomatica();
+                    }
+                });
             }
         });
     </script>
@@ -97,6 +124,7 @@
                 <option value="en-us" {% if idioma_selecionado == 'en-us' %}selected{% endif %}>Inglês (Avançado)</option>
                 <option value="de-de" {% if idioma_selecionado == 'de-de' %}selected{% endif %}>Alemão (Cultura)</option>
             </select>
+            
             <button type="submit" class="btn-salvar">Trocar Idioma</button>
         </form>
 
